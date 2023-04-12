@@ -25,6 +25,9 @@ with open(file, 'rb') as f:
         # Print tests until we get the map connected.
         try:
             uid = dData.cotEvent.uid
+            tak_type = dData.cotEvent.type
+            group_name = dData.cotEvent.detail.group.name
+            group_role = dData.cotEvent.detail.group.role
             endpoint = dData.cotEvent.detail.contact.endpoint
             callsign = dData.cotEvent.detail.contact.callsign
             lat = dData.cotEvent.lat
@@ -33,13 +36,17 @@ with open(file, 'rb') as f:
             platform = dData.cotEvent.detail.takv.platform
             tak_os = dData.cotEvent.detail.takv.os
             version = dData.cotEvent.detail.takv.version
-            
+            geopointsrc = dData.cotEvent.detail.precisionLocation.geopointsrc
             extracted_data.append({
                     'Uid': uid,
+                    'Type': tak_type,
                     'Callsign': callsign,
                     'Lat': lat,
                     'Lon': lon,
                     'Endpoint': endpoint,
+                    'GeoPointSrc': geopointsrc,
+                    'GroupName': group_name,
+                    'GroupRole': group_role
                 })
 
         except Exception as e:
@@ -55,7 +62,7 @@ fig = px.scatter_mapbox(
     lat='Lat',
     lon='Lon',
     hover_name='Callsign',
-    hover_data=['Endpoint'],
+    hover_data=['Endpoint', 'GeoPointSrc','GroupName', 'GroupRole', 'Type'],
     zoom=2,
     mapbox_style='carto-positron'  # OpenStreetMap based style
 )

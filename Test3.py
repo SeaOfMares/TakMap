@@ -1,3 +1,4 @@
+import plotly.express as px
 import os
 import shutil
 from takprotobuf import parseProto
@@ -23,12 +24,28 @@ with open(file, 'rb') as f:
         dData = parseProto(toDecode)
         # Print tests until we get the map connected.
         try:
+            uid = dData.cotEvent.uid
+            endpoint = dData.cotEvent.detail.contact.endpoint
+            callsign = dData.cotEvent.detail.contact.callsign
+            lat = dData.cotEvent.lat
+            lon = dData.cotEvent.lon
+            device = dData.cotEvent.detail.takv.device
+            platform = dData.cotEvent.detail.takv.platform
             tak_os = dData.cotEvent.detail.takv.os
-            #print("OS: ", tak_os)
-            print(dData.cotEvent)
+            version = dData.cotEvent.detail.takv.version
+            
+            print(dData.cotEvent.detail.precisionLocation.geopointsrc)
             break
+
+            extracted_data.append({
+                    'Uid': uid,
+                    'Callsign': callsign,
+                    'Lat': lat,
+                    'Lon': lon,
+                    'Endpoint': endpoint,
+                })
+
         except Exception as e:
             print("Something went wrong... ")
             print(dData+" .Error: "+str(e))
 
-#print(extracted_data[:10])

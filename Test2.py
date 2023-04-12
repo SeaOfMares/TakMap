@@ -9,10 +9,10 @@ import pandas as pd
 idx = 0
 file = 'TAK_TrafficS.pcapng'
 finalResult={'Callsign':[],'Lat':[],'Lon':[]}
+extracted_data = []
 with open(file, 'rb') as f:
     parsedData=f.read()
     idx = 0
-    extracted_data = []
 # \xbf, \x01, \xbf are interesting things we want. What are they?
     while parsedData.find(b'\xbf\x01\xbf', idx) != -1:
         headerLocation = parsedData.find(b'\xbf\x01\xbf', idx)

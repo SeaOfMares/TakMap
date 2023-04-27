@@ -1,41 +1,40 @@
 import pyshark
+import pandas as pd
 
-def open_capture_file(file_path):
-    return pyshark.FileCapture(file_path)
+# Replace this with the path to your pcap file
+pcap_file = '011723-WSMR-Unclass-NIKTOSCAN.pcapng'
+print("Reading ", pcap_file)
+capture = pyshark.FileCapture(pcap_file)
 
-def print_matching_packets(capture, protocol, port, max_count):
-    count = max_count
-    for packet in capture:
-        if count <= 0:
-            break
-        if protocol in packet and packet[protocol].dstport == port:
-            print(packet)
-            count -= 1
+# Initialize the data structure to store the information
+data = []
 
-def print_protocol_packets(capture, protocol, max_count):
-    count = max_count
-    for packet in capture:
-        if count <= 0:
-            break
-        if protocol in packet:
-            print(packet)
-            count -= 1
-def main():
-    # Open the pcapng file
-    capture_file_path = 'TAK_TrafficS.pcapng'
-    cap = open_capture_file(capture_file_path)
+# Define a function to process each packet
+def process_packet(packet):
+    try:
+        system_ip = packet.ip.src
+        destination_ip = packet.ip.dst
+        protocol_number = packet.transport_layer
+        sent_packets = packet.length
 
-    max_count = 10
-    udp_port = '6969'
-    tcp_port = '4242'
+        # Add the extracted information to the data structure
+        
+        data.append([system_ip, destination_ip, protocol_number, sent_packets])
 
-    # Print matching UDP packets
-    #print_matching_packets(cap, 'UDP', udp_port, max_count)
+    except AttributeError:
+        # Ignore the packet if it doesn't have the required attributes
+        pass
 
-    print_protocol_packets(cap, 'gps',max_count)
+# Start processing packets
+capture.apply_on_packets(process_packet)
 
-    # Print matching TCP packets
-    #print_matching_packets(cap, 'TCP', tcp_port, max_count)
+# Create a DataFrame from the data
+columns = ['System IP', 'Destination IP','Protocol', 'Sent Packets' ]
+df = pd.DataFrame(data, columns=columns)
 
-if __name__ == "__main__":
-    main()
+# Print the DataFrame
+#print(df)
+print(df['System IP'].unique())
+
+print(df[df['System IP'] == "172.16.100.240"])
+print("END\n-----------------------------------")
